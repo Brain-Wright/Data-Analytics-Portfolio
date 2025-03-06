@@ -1,1 +1,37 @@
+HOSPITAL PATIENT RECORDS 
 
+The dataset consists of 100 patient records, covering details such as patient demographics, diagnosis, visit history, billing information, and customer satisfaction ratings. The data required extensive cleaning, including handling missing values, standardizing categorical variables, and formatting numerical fields. 
+
+📌 Key Insights & Findings: 
+
+1️⃣ Patient Demographics & Visit Patterns 
+
+The most frequent patient age group is 39 years, accounting for 5% of the total patients. 
+
+Philadelphia has the highest number of patients, representing 13% of the total patient population. 
+
+Gender distribution shows male patients and female patients make up 49%  and 51% respectively of the hospital’s visitors. 
+
+2️⃣ Doctor & Diagnosis Analysis 
+
+The most common diagnosis among patients is the flu, appearing in 13% of cases. 
+
+Dr. Clark and Dr. White have the highest patient count, treating 14 patients each, followed by Dr. Harris with 12. 
+
+Patients diagnosed with Asthma have the highest average treatment cost of $3216.8. 
+
+3️⃣ Financial & Billing Insights 
+
+The average total bill per patient is $2570, with $4786 being the highest recorded bill. 
+
+Credit cards are the most frequently used payment method, covering 38% of transactions. 
+
+ 
+
+📌 Conclusion & Recommendations: 
+
+The hospital may need to optimize resource allocation in Philadelphia, given its high patient volume. 
+
+Dr. Clark and Dr. White should be further analyzed for their effectiveness as they have the highest patient volume and follow-up rate. 
+
+Introducing additional discounts for repeat patients may improve affordability without significantly impacting revenue. 
