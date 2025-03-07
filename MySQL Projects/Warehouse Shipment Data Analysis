@@ -2,7 +2,7 @@ Warehouse Shipment Data Analysis
 
 This project analyzes warehouse shipment data of 10000 entries to evaluate delivery performance, customer interactions, and product profitability. Examining shipment methods, customer behavior, and product importance, the goal is to identify patterns that can enhance logistics efficiency and overall profitability. 
 
-Key Questions Answered 
+📌 Key Questions Answered 
 
 When analyzing demographic factors correlated with higher purchase frequency, we saw that an average purchase amount of 3.58 was shown for Females and 3.55 for Males 
 
@@ -26,13 +26,13 @@ Are there patterns in customer ratings based on shipment type? Each mode of ship
 
 What role does product weight play in delivery delays? Unsurprisingly, we saw that the larger the average product weight, the higher the likelihood of the product not being delivered on time. 
 
-Technologies Used 
+📌 Technologies Used 
 
 SQL – for data cleaning and analysis 
 
 Power BI – for visualization and reporting 
 
-Conclusion 
+📌 Conclusion 
 
 Shipment Mode Impact on Timeliness: Road shipment displayed a slightly better on-time delivery percentage compared to ships, despite their smaller scale. However, flight shipments had the lowest volume but still experienced delays of over 40%, indicating inefficiencies in time-critical operations. 
 
@@ -40,7 +40,7 @@ Profit Margins and Product Importance: Products marked as "low importance" surpr
 
 Customer Satisfaction Insights: Customer care calls and the mode of shipment showed no meaningful impact on customer satisfaction, as ratings averaged around 3 across all scenarios. This suggests that other factors outside the dataset might play a larger role in customer experience. 
 
-Recommendations 
+📌 Recommendations 
 
 Optimize Shipment Strategies: Increase operational efficiencies, particularly in flight and ship modes, where delays are more frequent. Focus on improving delivery processes for heavier shipments, as these are prone to the highest delays. 
 
