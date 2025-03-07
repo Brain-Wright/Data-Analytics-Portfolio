@@ -4,9 +4,9 @@ This project analyzes warehouse shipment data of 10000 entries to evaluate deliv
 
 📌 Key Questions Answered 
 
-When analyzing demographic factors correlated with higher purchase frequency, we saw that an average purchase amount of 3.58 was shown for Females and 3.55 for Males 
+1. When analyzing demographic factors correlated with higher purchase frequency, we saw that an average purchase amount of 3.58 was shown for Females and 3.55 for Males 
 
-How does shipment mode impact on-time deliveries?  
+2. How does shipment mode impact on-time deliveries?  
 
 Flight: 1069 On Time, 708 Delayed and 1777 Total Shipments.  
 
@@ -14,17 +14,17 @@ Ship: 4459 On Time, 3003 Delayed and 7462 Total Shipments.
 
 Road: 1035 On Time, 725 Delayed, and 1760 Total Shipments 
 
-Is there a relationship between customer care calls and customer satisfaction? The analysis showed that regardless of the number of calls, the avg rating was 3 
+3. Is there a relationship between customer care calls and customer satisfaction? The analysis showed that regardless of the number of calls, the avg rating was 3 
 
-Which product categories yield the highest profit margins?  
+4. Which product categories yield the highest profit margins?  
 
 Surprisingly enough, the products with a low importance had the highest average profit margin, although it was not significantly higher than medium or high. 
 
-How does discounting affect profit margins? The analysis showed that the fewer discounts the warehouse gave, the larger the average profit was. 
+5. How does discounting affect profit margins? The analysis showed that the fewer discounts the warehouse gave, the larger the average profit was. 
 
-Are there patterns in customer ratings based on shipment type? Each mode of shipment yielded an average customer rating of 3 
+6. Are there patterns in customer ratings based on shipment type? Each mode of shipment yielded an average customer rating of 3 
 
-What role does product weight play in delivery delays? Unsurprisingly, we saw that the larger the average product weight, the higher the likelihood of the product not being delivered on time. 
+7. What role does product weight play in delivery delays? Unsurprisingly, we saw that the larger the average product weight, the higher the likelihood of the product not being delivered on time. 
 
 📌 Technologies Used 
 
