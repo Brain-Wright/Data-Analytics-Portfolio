@@ -1,1 +1,49 @@
+Warehouse Shipment Data Analysis 
 
+This project analyzes warehouse shipment data of 10000 entries to evaluate delivery performance, customer interactions, and product profitability. Examining shipment methods, customer behavior, and product importance, the goal is to identify patterns that can enhance logistics efficiency and overall profitability. 
+
+Key Questions Answered 
+
+When analyzing demographic factors correlated with higher purchase frequency, we saw that an average purchase amount of 3.58 was shown for Females and 3.55 for Males 
+
+How does shipment mode impact on-time deliveries?  
+
+Flight: 1069 On Time, 708 Delayed and 1777 Total Shipments.  
+
+Ship: 4459 On Time, 3003 Delayed and 7462 Total Shipments.  
+
+Road: 1035 On Time, 725 Delayed, and 1760 Total Shipments 
+
+Is there a relationship between customer care calls and customer satisfaction? The analysis showed that regardless of the number of calls, the avg rating was 3 
+
+Which product categories yield the highest profit margins?  
+
+Surprisingly enough, the products with a low importance had the highest average profit margin, although it was not significantly higher than medium or high. 
+
+How does discounting affect profit margins? The analysis showed that the fewer discounts the warehouse gave, the larger the average profit was. 
+
+Are there patterns in customer ratings based on shipment type? Each mode of shipment yielded an average customer rating of 3 
+
+What role does product weight play in delivery delays? Unsurprisingly, we saw that the larger the average product weight, the higher the likelihood of the product not being delivered on time. 
+
+Technologies Used 
+
+SQL – for data cleaning and analysis 
+
+Power BI – for visualization and reporting 
+
+Conclusion 
+
+Shipment Mode Impact on Timeliness: Road shipment displayed a slightly better on-time delivery percentage compared to ships, despite their smaller scale. However, flight shipments had the lowest volume but still experienced delays of over 40%, indicating inefficiencies in time-critical operations. 
+
+Profit Margins and Product Importance: Products marked as "low importance" surprisingly yielded the highest profit margins, albeit not significantly higher than other categories. Discounting negatively impacted profits, reinforcing that minimizing discounts is critical for revenue optimization. 
+
+Customer Satisfaction Insights: Customer care calls and the mode of shipment showed no meaningful impact on customer satisfaction, as ratings averaged around 3 across all scenarios. This suggests that other factors outside the dataset might play a larger role in customer experience. 
+
+Recommendations 
+
+Optimize Shipment Strategies: Increase operational efficiencies, particularly in flight and ship modes, where delays are more frequent. Focus on improving delivery processes for heavier shipments, as these are prone to the highest delays. 
+
+Focus on Low-Importance Products: Although low-importance products yielded the highest profit margins, explore strategies to enhance margins across other product categories by reducing unnecessary discounts and refining pricing strategies. 
+
+Enhance Customer Experience Beyond Shipping: Since shipment mode and customer care calls do not strongly influence satisfaction, further investigate other potential factors—such as packaging, response time to inquiries, or post-purchase services—to improve customer ratings 
