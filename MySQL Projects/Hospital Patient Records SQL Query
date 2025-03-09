@@ -1,1 +1,159 @@
+-- Objective: This project analyzes warehouse shipment data to evaluate delivery performance, customer interactions, and product profitability. Examining shipment methods, customer behavior, and product importance aims to identify patterns that can enhance logistics efficiency and profitability. --
 
+SELECT * FROM `portfolio_e-commerce_project`.train;
+
+-- DATA EXPLORATION: count rows, count nulls in each column, view table schema, etc.
+SELECT COUNT(*)FROM `portfolio_e-commerce_project`.train;
+
+DESCRIBE `portfolio_e-commerce_project`.train;
+
+-- Check for null values throughout the dataset
+SELECT 
+	SUM(CASE WHEN ï»¿ID IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM `portfolio_e-commerce_project`.train;
+
+SELECT 
+	SUM(CASE WHEN Warehouse_block IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM `portfolio_e-commerce_project`.train;
+
+SELECT 
+	SUM(CASE WHEN Mode_of_Shipment IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM `portfolio_e-commerce_project`.train;
+
+SELECT 
+	SUM(CASE WHEN Customer_care_calls IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM `portfolio_e-commerce_project`.train;
+
+SELECT 
+	SUM(CASE WHEN Customer_rating IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM `portfolio_e-commerce_project`.train;
+
+SELECT 
+	SUM(CASE WHEN Cost_of_the_Product IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM `portfolio_e-commerce_project`.train;
+
+SELECT 
+	SUM(CASE WHEN Prior_purchases IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM `portfolio_e-commerce_project`.train;
+
+SELECT 
+	SUM(CASE WHEN Product_importance IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM `portfolio_e-commerce_project`.train;
+
+SELECT 
+	SUM(CASE WHEN Gender IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM `portfolio_e-commerce_project`.train;
+
+SELECT 
+	SUM(CASE WHEN Discount_offered IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM `portfolio_e-commerce_project`.train;
+
+SELECT 
+	SUM(CASE WHEN Gender IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM `portfolio_e-commerce_project`.train;
+
+SELECT 
+	SUM(CASE WHEN Weight_in_gms IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM `portfolio_e-commerce_project`.train;
+
+-- DATA CLEANING: Identify and remove duplicates, correct inconsistencies, etc.
+SELECT ï»¿ID, Warehouse_block, Mode_of_Shipment, Customer_care_calls, Customer_rating, Cost_of_the_Product, Prior_purchases, Product_importance, Gender, Discount_offered, Weight_in_gms
+FROM `portfolio_e-commerce_project`.train
+	GROUP BY ï»¿ID, Warehouse_block, Mode_of_Shipment, Customer_care_calls, Customer_rating, Cost_of_the_Product, Prior_purchases, Product_importance, Gender, Discount_offered, Weight_in_gms
+	HAVING count(*) >1;
+ 
+ -- Set workbench to safe update mode to ensure specific queries would be accepted
+ SET SQL_SAFE_UPDATES = 0;
+ 
+-- correct inconsistencies in the dataset changing 1 to Y and 0 to N 
+SELECT 
+CASE 
+	WHEN `Reached.on.Time_Y.N` = 1 THEN 'Y'
+	WHEN `Reached.on.Time_Y.N` = 0 THEN 'N'
+	ELSE `Reached.on.Time_Y.N`
+END AS Delivered_on_time
+FROM `portfolio_e-commerce_project`.train;
+
+-- Add another column to the table 
+ALTER TABLE `portfolio_e-commerce_project`.train
+ADD COLUMN delivered_on_time varchar(255);
+
+UPDATE `portfolio_e-commerce_project`.train
+SET delivered_on_time = CASE 
+	WHEN delivered_on_time = 1 THEN 'Y'
+    WHEN delivered_on_time = 0 THEN 'N'
+    ELSE 'unknown'
+END;
+
+-- Delete the column Reached.on.Time from the table
+ALTER TABLE `portfolio_e-commerce_project`.train
+DROP COLUMN `Reached.on.Time_Y.N`;
+
+-- Add new column and calculate Profit Margin
+ALTER TABLE `portfolio_e-commerce_project`.train 
+ADD COLUMN Profit_Margin DECIMAL(10, 2);
+
+-- Conduct the calculations for the column Profit_Margin
+UPDATE `portfolio_e-commerce_project`.train
+SET Profit_Margin = (Cost_of_the_Product - Discount_offered) / Cost_of_the_Product * 100;
+
+-- Customer Demographics Influencing Purchasing Patterns
+SELECT Gender, AVG(Cost_of_the_Product) AS Avg_Spend
+FROM `portfolio_e-commerce_project`.train
+GROUP BY Gender
+ORDER BY Avg_Spend DESC;
+
+-- Most Profitable Customer Segments
+SELECT Gender, AVG(Cost_of_the_Product - Discount_offered) AS Avg_Profit
+FROM `portfolio_e-commerce_project`.train
+GROUP BY Gender
+ORDER BY Avg_Profit DESC;
+
+-- Demographic Factors Correlated with Higher Purchase Frequency We saw that an avg purchase amount of 3.58 was shown for Females and 3.55 for Males
+SELECT Gender, AVG(Prior_purchases) AS Avg_Purchases
+FROM `portfolio_e-commerce_project`.train
+GROUP BY Gender
+ORDER BY Avg_Purchases DESC;
+
+-- What factors contribute to delayed deliveries?
+SELECT Warehouse_block, Mode_of_Shipment, AVG(Weight_in_gms) AS Avg_Weight, AVG(Discount_offered) AS Avg_Discount, COUNT(*) AS Total_Deliveries
+FROM `portfolio_e-commerce_project`.train
+WHERE delivered_on_time = 'No'
+GROUP BY Warehouse_block, Mode_of_Shipment;
+
+-- How does shipment mode impact on-time deliveries? Flight: 1069 On_Time, 708 Delayed and 1777 Total_Shipments. Ship: 4459 On_Time, 3003 Delayed and 7462 Total_Shipments. Road 1035 On_Time, 725 Delayed and 1760 Total_Shipments
+SELECT Mode_of_Shipment, 
+       SUM(CASE WHEN delivered_on_time = 'Y' THEN 1 ELSE 0 END) AS On_Time,
+       SUM(CASE WHEN delivered_on_time = 'N' THEN 1 ELSE 0 END) AS 'Delayed',
+       COUNT(*) AS Total_Shipments
+FROM `portfolio_e-commerce_project`.train
+GROUP BY Mode_of_Shipment;
+
+-- Relationship between customer care calls and customer satisfaction? The analysis showed that regardless of the number of calls, the avg rating was 3
+SELECT Customer_care_calls, AVG(Customer_rating) AS Avg_Rating
+FROM `portfolio_e-commerce_project`.train
+GROUP BY Customer_care_calls
+ORDER BY Customer_care_calls;
+
+-- Which product categories yield the highest profit margins? Surprisingly enough, the products with a low importance had the highest avg profit margin, although it was not significantly higher than medium or high.
+SELECT Product_importance, AVG(Profit_Margin) AS Avg_Profit_Margin
+FROM `portfolio_e-commerce_project`.train
+GROUP BY Product_importance
+ORDER BY Avg_Profit_Margin DESC;
+
+-- How does discounting affect profit margins? The analysis showed that the fewer discounts given by the warehouse, the larger the avg profit was.
+SELECT Discount_offered, AVG(Profit_Margin) AS Avg_Profit_Margin
+FROM `portfolio_e-commerce_project`.train
+GROUP BY Discount_offered
+ORDER BY Discount_offered;
+
+-- Are there patterns in customer ratings based on shipment type? Each mode of shipment yielded an avg customer rating of 3
+SELECT Mode_of_Shipment, AVG(Customer_rating) AS Avg_Customer_Rating
+FROM `portfolio_e-commerce_project`.train
+GROUP BY Mode_of_Shipment
+ORDER BY Avg_Customer_Rating DESC;
+
+-- What role does product weight play in delivery delays? Unsurprisingly, we saw that the larger the avg product weight, the higher the likelihood of the product not being delivered on time.
+SELECT delivered_on_time, AVG(Weight_in_gms) AS Avg_Weight
+FROM `portfolio_e-commerce_project`.train
+GROUP BY delivered_on_time;
