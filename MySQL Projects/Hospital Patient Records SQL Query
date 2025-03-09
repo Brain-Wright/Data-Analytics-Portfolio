@@ -1,159 +1,269 @@
--- Objective: This project analyzes warehouse shipment data to evaluate delivery performance, customer interactions, and product profitability. Examining shipment methods, customer behavior, and product importance aims to identify patterns that can enhance logistics efficiency and profitability. --
+-- Objective - The objective of this project is to analyze hospital patient records to uncover key trends in patient demographics, doctor performance, visit patterns, billing insights, and overall operational efficiency. Through SQL-based data cleaning and analysis, this project aims to identify opportunities for improving patient experience, optimizing hospital operations, and enhancing revenue management.--
 
-SELECT * FROM `portfolio_e-commerce_project`.train;
+
+SELECT * FROM hospital_patient_records.hospital_patient_records_large;
 
 -- DATA EXPLORATION: count rows, count nulls in each column, view table schema, etc.
-SELECT COUNT(*)FROM `portfolio_e-commerce_project`.train;
+SELECT COUNT(*)FROM hospital_patient_records.hospital_patient_records_large;
 
-DESCRIBE `portfolio_e-commerce_project`.train;
-
--- Check for null values throughout the dataset
-SELECT 
-	SUM(CASE WHEN ï»¿ID IS NULL THEN 1 ELSE 0 END) AS null_count
-FROM `portfolio_e-commerce_project`.train;
+DESCRIBE hospital_patient_records.hospital_patient_records_large;
 
 SELECT 
-	SUM(CASE WHEN Warehouse_block IS NULL THEN 1 ELSE 0 END) AS null_count
-FROM `portfolio_e-commerce_project`.train;
+	SUM(CASE WHEN Patient_ID IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
 
 SELECT 
-	SUM(CASE WHEN Mode_of_Shipment IS NULL THEN 1 ELSE 0 END) AS null_count
-FROM `portfolio_e-commerce_project`.train;
+	SUM(CASE WHEN Full_Name IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
 
 SELECT 
-	SUM(CASE WHEN Customer_care_calls IS NULL THEN 1 ELSE 0 END) AS null_count
-FROM `portfolio_e-commerce_project`.train;
-
-SELECT 
-	SUM(CASE WHEN Customer_rating IS NULL THEN 1 ELSE 0 END) AS null_count
-FROM `portfolio_e-commerce_project`.train;
-
-SELECT 
-	SUM(CASE WHEN Cost_of_the_Product IS NULL THEN 1 ELSE 0 END) AS null_count
-FROM `portfolio_e-commerce_project`.train;
-
-SELECT 
-	SUM(CASE WHEN Prior_purchases IS NULL THEN 1 ELSE 0 END) AS null_count
-FROM `portfolio_e-commerce_project`.train;
-
-SELECT 
-	SUM(CASE WHEN Product_importance IS NULL THEN 1 ELSE 0 END) AS null_count
-FROM `portfolio_e-commerce_project`.train;
+	SUM(CASE WHEN Age IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
 
 SELECT 
 	SUM(CASE WHEN Gender IS NULL THEN 1 ELSE 0 END) AS null_count
-FROM `portfolio_e-commerce_project`.train;
+FROM hospital_patient_records.hospital_patient_records_large;
 
 SELECT 
-	SUM(CASE WHEN Discount_offered IS NULL THEN 1 ELSE 0 END) AS null_count
-FROM `portfolio_e-commerce_project`.train;
+	SUM(CASE WHEN Appointment_Date IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
 
 SELECT 
-	SUM(CASE WHEN Gender IS NULL THEN 1 ELSE 0 END) AS null_count
-FROM `portfolio_e-commerce_project`.train;
+	SUM(CASE WHEN Doctor_Assigned IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
 
 SELECT 
-	SUM(CASE WHEN Weight_in_gms IS NULL THEN 1 ELSE 0 END) AS null_count
-FROM `portfolio_e-commerce_project`.train;
+	SUM(CASE WHEN Diagnosis IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
+
+SELECT 
+	SUM(CASE WHEN Previous_Visits IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
+
+SELECT 
+	SUM(CASE WHEN Insurance IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
+
+SELECT 
+	SUM(CASE WHEN Total_Bill IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
+
+SELECT 
+	SUM(CASE WHEN Discount_Applied IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
+
+SELECT 
+	SUM(CASE WHEN Payment_Method IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
+
+SELECT 
+	SUM(CASE WHEN Follow_Up_Required IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
+
+SELECT 
+	SUM(CASE WHEN City IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM hospital_patient_records.hospital_patient_records_large;
 
 -- DATA CLEANING: Identify and remove duplicates, correct inconsistencies, etc.
-SELECT ï»¿ID, Warehouse_block, Mode_of_Shipment, Customer_care_calls, Customer_rating, Cost_of_the_Product, Prior_purchases, Product_importance, Gender, Discount_offered, Weight_in_gms
-FROM `portfolio_e-commerce_project`.train
-	GROUP BY ï»¿ID, Warehouse_block, Mode_of_Shipment, Customer_care_calls, Customer_rating, Cost_of_the_Product, Prior_purchases, Product_importance, Gender, Discount_offered, Weight_in_gms
+SELECT Patient_ID, Full_Name, Age, Gender, Appointment_Date, Doctor_Assigned, Diagnosis, Previous_Visits, Insurance, Total_Bill, Discount_Applied, Payment_Method, Follow_Up_Required, City
+FROM hospital_patient_records.hospital_patient_records_large
+	GROUP BY Patient_ID, Full_Name, Age, Gender, Appointment_Date, Doctor_Assigned, Diagnosis, Previous_Visits, Insurance, Total_Bill, Discount_Applied, Payment_Method, Follow_Up_Required, City
 	HAVING count(*) >1;
- 
- -- Set workbench to safe update mode to ensure specific queries would be accepted
- SET SQL_SAFE_UPDATES = 0;
- 
--- correct inconsistencies in the dataset changing 1 to Y and 0 to N 
-SELECT 
-CASE 
-	WHEN `Reached.on.Time_Y.N` = 1 THEN 'Y'
-	WHEN `Reached.on.Time_Y.N` = 0 THEN 'N'
-	ELSE `Reached.on.Time_Y.N`
-END AS Delivered_on_time
-FROM `portfolio_e-commerce_project`.train;
+    
+    SET SQL_SAFE_UPDATES = 0;
+-- Make this column entirely lowercase
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Payment_Method = LOWER(Payment_Method);
 
--- Add another column to the table 
-ALTER TABLE `portfolio_e-commerce_project`.train
-ADD COLUMN delivered_on_time varchar(255);
+-- Trim away the clear space at the front and the back of each entry in the column.
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Payment_Method = TRIM(Payment_Method);
 
-UPDATE `portfolio_e-commerce_project`.train
-SET delivered_on_time = CASE 
-	WHEN delivered_on_time = 1 THEN 'Y'
-    WHEN delivered_on_time = 0 THEN 'N'
-    ELSE 'unknown'
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Full_Name = TRIM(Full_Name);
+
+-- Remove inconsistencies, ensuring entries state 'Male'
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Gender = 'Male' 
+WHERE Gender IN ('m', 'M', 'MALE');
+
+-- Remove inconsistencies, ensuring entries state 'Female'
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Gender = 'Female' 
+WHERE Gender IN ('f', 'F', 'FEMALE');
+
+-- Remove inconsistencies, ensuring entries state 'Yes'
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Insurance = 'Yes' 
+WHERE Insurance IN ('y', 'Y', 'YES');
+
+-- Remove inconsistencies, ensuring entries state 'No'
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Insurance = 'No' 
+WHERE Insurance IN ('n', 'N', 'NO');
+
+-- Remove inconsistencies, ensuring entries state 'Yes'
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Follow_Up_Required = 'Yes' 
+WHERE Follow_Up_Required IN ('y', 'Y', 'YES');
+
+-- Remove inconsistencies, ensuring entries state 'No'
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Follow_Up_Required = 'No' 
+WHERE Follow_Up_Required IN ('n', 'N', 'NO');
+
+-- Ensure all letters in the column aren't inconsistent
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Full_Name = LOWER(Full_Name);
+
+-- Capitalize first letters of first and last names
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Full_Name = CONCAT(UCASE(LEFT(Full_Name, 1)),
+  LCASE(SUBSTRING(Full_Name, 2)));
+
+-- Capitalize first letters of the varying payment methods
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Payment_Method= CONCAT(UCASE(LEFT(Payment_Method, 1)),
+  LCASE(SUBSTRING(Payment_Method, 2)));
+
+-- Trim blank spaces behind and in front of inputs in this column
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Discount_Applied = TRIM(Discount_Applied);
+
+SELECT CONCAT(Discount_Applied, '%') AS Discount_Percentage
+FROM hospital_patient_records.hospital_patient_records_large;
+
+-- Ensure consistency with numerics and texts
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Previous_Visits = '2' 
+WHERE Previous_Visits IN ('two');
+
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Previous_Visits = '4' 
+WHERE Previous_Visits IN ('four');
+
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Previous_Visits = '6' 
+WHERE Previous_Visits IN ('six');
+
+-- Remove $ from infront of the total_bill price 
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Total_Bill= REPLACE(Total_Bill, '$', '')
+WHERE Total_Bill LIKE '$%';
+
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Total_Bill = TRIM(Total_Bill);
+
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Discount_Applied = CONCAT(Discount_Applied, '%')
+WHERE Discount_Applied NOT LIKE '%\%';
+
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Discount_Applied = REPLACE(Discount_Applied, '%', '0%')
+WHERE Discount_Applied LIKE '%\%%';
+
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Discount_Applied = Discount_Applied/10;
+
+-- again add the '%' symbol
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Discount_Applied = CONCAT(Discount_Applied, '%')
+WHERE Discount_Applied NOT LIKE '%\%';
+
+-- Add column to indicate who made doctors appointments prior
+ALTER TABLE hospital_patient_records.hospital_patient_records_large
+ADD COLUMN Repeat_Patient VARCHAR(3); 
+
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Repeat_Patient = CASE
+    WHEN Previous_Visits > 1 THEN 'Yes'
+    ELSE 'No'
 END;
 
--- Delete the column Reached.on.Time from the table
-ALTER TABLE `portfolio_e-commerce_project`.train
-DROP COLUMN `Reached.on.Time_Y.N`;
+-- Step 2: Normalize the dates to a consistent format
+-- Assume the column containing dates is named 'date_column', and you want to standardize to 'YYYY-MM-DD'
 
--- Add new column and calculate Profit Margin
-ALTER TABLE `portfolio_e-commerce_project`.train 
-ADD COLUMN Profit_Margin DECIMAL(10, 2);
+-- Update dates where format is DD/MM/YYYY
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Appointment_Date = STR_TO_DATE(Appointment_Date, '%d/%m/%Y')
+WHERE Appointment_Date LIKE '__/__/____';
 
--- Conduct the calculations for the column Profit_Margin
-UPDATE `portfolio_e-commerce_project`.train
-SET Profit_Margin = (Cost_of_the_Product - Discount_offered) / Cost_of_the_Product * 100;
+-- Update dates where format is DD-MM-YYYY
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Appointment_Date = STR_TO_DATE(Appointment_Date, '%d-%m-%Y')
+WHERE Appointment_Date LIKE '__-__-____';
 
--- Customer Demographics Influencing Purchasing Patterns
-SELECT Gender, AVG(Cost_of_the_Product) AS Avg_Spend
-FROM `portfolio_e-commerce_project`.train
-GROUP BY Gender
-ORDER BY Avg_Spend DESC;
 
--- Most Profitable Customer Segments
-SELECT Gender, AVG(Cost_of_the_Product - Discount_offered) AS Avg_Profit
-FROM `portfolio_e-commerce_project`.train
-GROUP BY Gender
-ORDER BY Avg_Profit DESC;
+-- Add a new column named Full_Bill 
+ALTER TABLE hospital_patient_records.hospital_patient_records_large
+ADD COLUMN Full_Bill DECIMAL(10, 2);
 
--- Demographic Factors Correlated with Higher Purchase Frequency We saw that an avg purchase amount of 3.58 was shown for Females and 3.55 for Males
-SELECT Gender, AVG(Prior_purchases) AS Avg_Purchases
-FROM `portfolio_e-commerce_project`.train
-GROUP BY Gender
-ORDER BY Avg_Purchases DESC;
+-- Calculate Full_Bill:Full_Bill = (Total_Bill-(Total_Bill*(Discount_Applied/100)))
+UPDATE hospital_patient_records.hospital_patient_records_large
+SET Full_Bill = (Total_Bill-(Total_Bill*(Discount_Applied/100)));
 
--- What factors contribute to delayed deliveries?
-SELECT Warehouse_block, Mode_of_Shipment, AVG(Weight_in_gms) AS Avg_Weight, AVG(Discount_offered) AS Avg_Discount, COUNT(*) AS Total_Deliveries
-FROM `portfolio_e-commerce_project`.train
-WHERE delivered_on_time = 'No'
-GROUP BY Warehouse_block, Mode_of_Shipment;
+-- Gender distribution of patients showed that it was 49 males and 51 females.
+SELECT Gender, COUNT(*) AS Number_of_Patients
+FROM hospital_patient_records.hospital_patient_records_large
+GROUP BY Gender;
 
--- How does shipment mode impact on-time deliveries? Flight: 1069 On_Time, 708 Delayed and 1777 Total_Shipments. Ship: 4459 On_Time, 3003 Delayed and 7462 Total_Shipments. Road 1035 On_Time, 725 Delayed and 1760 Total_Shipments
-SELECT Mode_of_Shipment, 
-       SUM(CASE WHEN delivered_on_time = 'Y' THEN 1 ELSE 0 END) AS On_Time,
-       SUM(CASE WHEN delivered_on_time = 'N' THEN 1 ELSE 0 END) AS 'Delayed',
-       COUNT(*) AS Total_Shipments
-FROM `portfolio_e-commerce_project`.train
-GROUP BY Mode_of_Shipment;
+-- The City with the highest number of patients was shown to be Philadelphia with 13 patients.
+SELECT City, COUNT(*) AS Number_of_Patients
+FROM hospital_patient_records.hospital_patient_records_large
+GROUP BY City
+ORDER BY Number_of_Patients DESC
+LIMIT 1;
 
--- Relationship between customer care calls and customer satisfaction? The analysis showed that regardless of the number of calls, the avg rating was 3
-SELECT Customer_care_calls, AVG(Customer_rating) AS Avg_Rating
-FROM `portfolio_e-commerce_project`.train
-GROUP BY Customer_care_calls
-ORDER BY Customer_care_calls;
+-- Age Distribution of Patients showed that they ranged from 20 years to 80 years with each age having at least 1-5 patients aside from ages 27, 28, 40, 41, 42, 49, 54, 58, 59, 61 & 63 which had no patients at all.
+SELECT Age, COUNT(*) AS Number_of_Patients
+FROM hospital_patient_records.hospital_patient_records_large
+GROUP BY Age
+ORDER BY Age;
 
--- Which product categories yield the highest profit margins? Surprisingly enough, the products with a low importance had the highest avg profit margin, although it was not significantly higher than medium or high.
-SELECT Product_importance, AVG(Profit_Margin) AS Avg_Profit_Margin
-FROM `portfolio_e-commerce_project`.train
-GROUP BY Product_importance
-ORDER BY Avg_Profit_Margin DESC;
+-- Doctors specializing in handling specific diagnoses the most showed Dr. Clark diagnosed 4 patients with diabetes which was the highest diagnosis.
+SELECT Doctor_Assigned, Diagnosis, COUNT(*) AS Number_of_Patients
+FROM hospital_patient_records.hospital_patient_records_large
+GROUP BY Doctor_Assigned, Diagnosis
+ORDER BY Number_of_Patients DESC;
 
--- How does discounting affect profit margins? The analysis showed that the fewer discounts given by the warehouse, the larger the avg profit was.
-SELECT Discount_offered, AVG(Profit_Margin) AS Avg_Profit_Margin
-FROM `portfolio_e-commerce_project`.train
-GROUP BY Discount_offered
-ORDER BY Discount_offered;
+-- What are the most common diagnoses among patients? The flu was shown to be the most common diagnosis with 13 patients with hypertension and allergies having 11.
+SELECT Diagnosis, COUNT(*) AS Number_of_Patients
+FROM hospital_patient_records.hospital_patient_records_large
+GROUP BY Diagnosis
+ORDER BY Number_of_Patients DESC
+LIMIT 10;
 
--- Are there patterns in customer ratings based on shipment type? Each mode of shipment yielded an avg customer rating of 3
-SELECT Mode_of_Shipment, AVG(Customer_rating) AS Avg_Customer_Rating
-FROM `portfolio_e-commerce_project`.train
-GROUP BY Mode_of_Shipment
-ORDER BY Avg_Customer_Rating DESC;
+-- Which doctors have treated the most patients? The analysis showed that Dr. White and Dr. Clark both had 14 patients, with Dr. Harris having 12.
+SELECT Doctor_Assigned, COUNT(*) AS Number_of_Patients
+FROM hospital_patient_records.hospital_patient_records_large
+GROUP BY Doctor_Assigned
+ORDER BY Number_of_Patients DESC;
 
--- What role does product weight play in delivery delays? Unsurprisingly, we saw that the larger the avg product weight, the higher the likelihood of the product not being delivered on time.
-SELECT delivered_on_time, AVG(Weight_in_gms) AS Avg_Weight
-FROM `portfolio_e-commerce_project`.train
-GROUP BY delivered_on_time;
+-- Total Revenue Generated by Each City
+SELECT City, SUM(Total_Bill) AS Total_Revenue
+FROM hospital_patient_records.hospital_patient_records_large
+GROUP BY City
+ORDER BY Total_Revenue DESC;
+
+-- The most Frequently Used Payment Method was shown to be Credit cards, with 38 patients using it.
+SELECT Payment_Method, COUNT(*) AS Usage_Count
+FROM hospital_patient_records.hospital_patient_records_large
+GROUP BY Payment_Method
+ORDER BY Usage_Count DESC
+LIMIT 1;
+
+-- Impact of Discount Offered on Total Bill Amounts showed that non-discounted payments yielded a higher cash amount than discounted with discounted averages being 2570.13 and non-discounted being 2732.41
+SELECT 
+    CASE 
+        WHEN Discount_Applied > 0 THEN 'Discounted'
+        ELSE 'Non-Discounted'
+    END AS Discount_Status,
+    AVG(Total_Bill) AS Average_Total_Bill
+FROM hospital_patient_records.hospital_patient_records_large
+GROUP BY Discount_Status;
+
+-- Average Bill Amount per Diagnosis showed that asthma patients paid the highest medical bills with 3216.8 being their avg.
+SELECT Diagnosis, AVG(Total_Bill) AS Average_Bill_Amount
+FROM hospital_patient_records.hospital_patient_records_large
+GROUP BY Diagnosis
+ORDER BY Average_Bill_Amount DESC;
