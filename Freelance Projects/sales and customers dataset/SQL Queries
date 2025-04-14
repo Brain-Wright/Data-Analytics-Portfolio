@@ -1,1 +1,283 @@
+SELECT * FROM sales_and_customer_data.sales_data;
 
+-- 1. Sales Data Analysis 1. Total sales per month and per category 2. Customer retention and purchase frequency 3. Best-selling products and least-performing ones 4. Predicting next months sales based on historical trends -- 
+   
+-- 2. Customer Data Analysis 1. Identifying high-value customers 2. Customer segmentation based on purchasing patterns 3. Churn rate calculation --
+
+-- DATA EXPLORATION: count rows, count nulls in each column, view table schema etc.
+
+SELECT COUNT(*)FROM sales_and_customer_data.customers_data;
+
+SELECT COUNT(*)FROM sales_and_customer_data.sales_data;
+
+DESCRIBE sales_and_customer_data.sales_data;
+
+DESCRIBE  sales_and_customer_data.customers_data;
+
+SELECT 
+	SUM(CASE WHEN `Customer ID` IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM sales_and_customer_data.customers_data;
+
+SELECT 
+	SUM(CASE WHEN `Name` IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM sales_and_customer_data.customers_data;
+
+SELECT 
+	SUM(CASE WHEN `Location` IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM sales_and_customer_data.customers_data;
+
+SELECT 
+	SUM(CASE WHEN Industry IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM  sales_and_customer_data.customers_data;
+
+SELECT 
+	SUM(CASE WHEN `Loyalty Tier` IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM sales_and_customer_data.customers_data;
+
+SELECT 
+	SUM(CASE WHEN `Date` IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM  sales_and_customer_data.sales_data;
+
+SELECT 
+	SUM(CASE WHEN `Product ID` IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM sales_and_customer_data.sales_data;
+
+SELECT 
+	SUM(CASE WHEN `Customer ID` IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM  sales_and_customer_data.sales_data;
+
+SELECT 
+	SUM(CASE WHEN `Sales Rep ID` IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM  sales_and_customer_data.sales_data;
+
+SELECT 
+	SUM(CASE WHEN `Quantity Sold` IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM  sales_and_customer_data.sales_data;
+
+SELECT 
+	SUM(CASE WHEN `Unit Price` IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM  sales_and_customer_data.sales_data;
+
+SELECT 
+	SUM(CASE WHEN `Discount Applied` IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM  sales_and_customer_data.sales_data;
+
+SELECT 
+	SUM(CASE WHEN `Total Revenue` IS NULL THEN 1 ELSE 0 END) AS null_count
+FROM  sales_and_customer_data.sales_data;
+
+-- Data Cleaning: (Standardizing date formats) identify and remove duplicates, correct inconsistencies etc.
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE sales_and_customer_data.sales_data
+SET `Date` = STR_TO_DATE(Date, '%m/%d/%Y')
+WHERE `Date` LIKE '%/%';
+
+-- Removing duplicates
+SELECT Date, `Product ID`, `Customer ID`, `Sales Rep ID`, `Quantity Sold`, `Unit Price`, `Discount Applied`, `Total Revenue`
+FROM sales_and_customer_data.sales_data
+	GROUP BY Date, `Product ID`, `Customer ID`, `Sales Rep ID`, `Quantity Sold`, `Unit Price`, `Discount Applied`, `Total Revenue`
+	HAVING count(*) >1;
+    
+    SELECT `Customer ID`, `Name`, `Location`, `Industry`, `Loyalty Tier`
+FROM sales_and_customer_data.customers_data
+	GROUP BY `Customer ID`, `Name`, `Location`, `Industry`, `Loyalty Tier`
+	HAVING count(*) >1;
+    
+-- Handling NULL values
+UPDATE sales_and_customer_data.sales_data 
+SET `Discount Applied` = 0
+WHERE `Discount Applied` = '';
+
+-- Add new column to sales data table
+ALTER TABLE sales_and_customer_data.sales_data 
+ADD COLUMN Real_Total_Revenue varchar(3); 
+
+-- Calculate the total revenue value for the new column added 
+UPDATE sales_and_customer_data.sales_data 
+SET Real_Total_Revenue = (`Quantity Sold` * `Unit Price`) - `Discount Applied`
+WHERE Real_Total_Revenue IS NULL;
+
+-- Set Discount Applied table to two decimal places
+UPDATE sales_and_customer_data.sales_data 
+SET `Discount Applied` = ROUND(`Discount Applied`, 2);
+
+-- Set Real_Total_Revenue table to two decimal places
+UPDATE sales_and_customer_data.sales_data 
+SET `Real_Total_Revenue` = ROUND(`Real_Total_Revenue`, 2);
+
+-- Remove previous total revenue column
+ALTER TABLE sales_and_customer_data.sales_data 
+DROP COLUMN `Total Revenue`;
+
+-- Add new column to customers data table
+ALTER TABLE sales_and_customer_data.customers_data
+ADD COLUMN `Loyalty Members` varchar(50); 
+
+-- correct inconsistencies between both tables
+UPDATE sales_and_customer_data.customers_data
+SET `Loyalty Members` = 'Yes' 
+WHERE `Loyalty Tier` IN ('y', 'Gold', 'Silver', 'Bronze');
+
+UPDATE sales_and_customer_data.customers_data
+SET `Loyalty Members` = 'No' 
+WHERE `Loyalty Tier` IN ('N');
+
+UPDATE sales_and_customer_data.customers_data
+SET `Loyalty Tier` = 'Tier status not specified' 
+WHERE `Loyalty Tier` IN ('y');
+
+UPDATE sales_and_customer_data.customers_data
+SET `Loyalty Tier` = 'No loyalty tier' 
+WHERE `Loyalty Tier` IN ('n');
+
+UPDATE sales_and_customer_data.customers_data 
+SET `Loyalty Tier` = 'No Info'
+WHERE TRIM(`Loyalty Tier`) = '';
+
+UPDATE sales_and_customer_data.customers_data
+SET `Loyalty Members` = 'No Info' 
+WHERE `Loyalty Tier` IN ('No Info');
+
+-- Data Joining
+SELECT 
+    customers.`Customer ID`, 
+    customers.`Name`, 
+    customers.`Location`, 
+    customers.`Industry`, 
+    customers.`Loyalty Tier`, 
+    customers.`Loyalty Members`, 
+    sales.`Real_Total_Revenue`,
+    sales.`Date`,
+    sales.`Product ID`
+FROM 
+    sales_and_customer_data.customers_data AS customers
+JOIN 
+    sales_and_customer_data.sales_data AS sales
+ON 
+    customers.`Customer ID` = sales.`Customer ID`;
+
+-- KPI Calculations
+-- Total Sales Per Month FROM January 2023 to May 2024 were as followed: 8292, 7593, 5617, 9848.5, 9238, 8629.4, 8368.1, 6986, 8361, 7843, 6652.3, 6421, 8641, 6676, 9016, 6856, 2593.
+
+SELECT 
+    DATE_FORMAT(`Date`, '%Y-%m') AS Month, 
+    SUM(Real_Total_Revenue) AS Total_Sales
+FROM 
+    sales_and_customer_data.sales_data
+GROUP BY 
+    DATE_FORMAT(`Date`, '%Y-%m')
+ORDER BY 
+    Month ASC;
+
+
+-- Best-Selling Products were those with product ID number 1023, 1001 and 1061 with all above 3000.00 being 3123, 3032 and 3002 respectively. 
+SELECT 
+    `Product ID`, 
+    SUM(Real_Total_Revenue) AS Total_Revenue
+FROM 
+    sales_and_customer_data.sales_data
+GROUP BY 
+    `Product ID`
+ORDER BY 
+    Total_Revenue DESC
+LIMIT 10;
+
+
+-- Predictive Analysis: Next Month's Sales Forecast was predicted to be 7507.72
+SELECT 
+    AVG(Total_Sales) AS Forecasted_Sales
+FROM (
+    SELECT 
+        DATE_FORMAT(`Date`, '%Y-%m') AS Month, 
+        SUM(Real_Total_Revenue) AS Total_Sales
+    FROM 
+        sales_and_customer_data.sales_data
+    GROUP BY 
+        DATE_FORMAT(`Date`, '%Y-%m')
+) AS MonthlySales;
+
+-- Geographical Sales Distribution showed Illonois made 8531.5, Texas made 7950, California made 7525.4, New York made 6140 and Florida made 5504. 
+    
+    SELECT
+    customers.`Location`,
+    SUM(sales.`Real_Total_Revenue`) AS Total_Sales
+FROM
+    sales_and_customer_data.customers_data AS customers
+JOIN
+    sales_and_customer_data.sales_data AS sales
+ON
+    customers.`Customer ID` = sales.`Customer ID`
+GROUP BY
+    customers.`Location`
+ORDER BY
+    Total_Sales DESC
+LIMIT
+    10000;
+
+-- Discount Impact was shown to be 4311.27 and Discount difference is 4308.2
+SELECT 
+    SUM(`Discount Applied`) AS Total_Discount_Impact,
+    SUM((`Quantity Sold` * `Unit Price`)) - SUM(`Real_Total_Revenue`) AS Discount_Difference
+FROM 
+    sales_and_customer_data.sales_data;
+
+-- Low Revenue Customers were shown to all spend less than 100 dollars with the lowest spenders being Customer 195 and 33 spending 5.5 and 12 dollars respectively. 
+SELECT 
+    customers.`Customer ID`, 
+    customers.`Name`, 
+    SUM(sales.`Real_Total_Revenue`) AS Total_Revenue
+FROM 
+    sales_and_customer_data.customers_data AS customers
+JOIN 
+    sales_and_customer_data.sales_data AS sales
+ON 
+    customers.`Customer ID` = sales.`Customer ID`
+GROUP BY 
+    customers.`Customer ID`, customers.`Name`
+ORDER BY 
+    Total_Revenue ASC
+LIMIT 10;
+
+-- Sales Growth: it was shown that sales progressed gradually upward from jan 2023 to may 2023 then fluctuated every month onward of a difference of 2000 to 3000 difference. 
+SELECT 
+    Month, 
+    Total_Sales,
+    LAG(Total_Sales) OVER (ORDER BY Month) AS Previous_Month_Sales,
+    (Total_Sales - LAG(Total_Sales) OVER (ORDER BY Month)) / LAG(Total_Sales) OVER (ORDER BY Month) * 100 AS Month_Over_Month_Growth
+FROM (
+    SELECT 
+        DATE_FORMAT(`Date`, '%Y-%m') AS Month, 
+        SUM(Real_Total_Revenue) AS Total_Sales
+    FROM 
+        sales_and_customer_data.sales_data
+    GROUP BY 
+        DATE_FORMAT(`Date`, '%Y-%m')
+) AS MonthlySales;
+
+
+-- Most Popular Industries showed retail having the largest customer count of 56, healthcare and tech 52 each, manufacturing 47 and finance having 43 customers. 
+SELECT 
+    Industry, 
+    COUNT(*) AS Customer_Count
+FROM 
+    sales_and_customer_data.customers_data
+GROUP BY 
+    Industry
+ORDER BY 
+    Customer_Count DESC;
+
+-- Customer Retention showed that 203 customers were repeated customers. 
+SELECT 
+    COUNT(*) AS Total_Loyalty_Members
+FROM 
+    sales_and_customer_data.customers_data
+WHERE 
+    `Loyalty Members` = 'Yes';
+
+-- Average Order Value (AOV) was shown to be 255.26 
+SELECT 
+    AVG(Real_Total_Revenue) AS Average_Order_Value
+FROM 
+    sales_and_customer_data.sales_data;
+    
